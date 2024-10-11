@@ -40,7 +40,6 @@ button {
     padding: var(--padding);
     min-width: var(--buttons_width);
     border-radius: var(--border-radius);
-
 }
 
 button:hover {
@@ -110,11 +109,10 @@ input[type="submit"]:hover {
     justify-content: center;
     font-size: 0.9em;
     color: rgb(50, 54, 62);
-    width: 200px;
-    max-width: 200px;
+    width: 300px;
+    max-width: 300px;
     border-radius: 5px;
     flex-direction: column; /* Apila los elementos verticalmente */
-    justify-content: flex-start;
     align-items: flex-start;
     padding: 10px;
     border: 1px solid rgb(164, 185, 232);
@@ -139,6 +137,7 @@ input[type="submit"]:hover {
     gap: 10px; 
     width: 100%; 
     display: flex;
+    margin-top: 10px;
     justify-content: flex-end; 
 }
 

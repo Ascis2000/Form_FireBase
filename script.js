@@ -1,92 +1,139 @@
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAYos4oiAf1nhgmSC2l4DhNQzzgXXrnPTA",
-  authDomain: "demoweb-32dd6.firebaseapp.com",
-  projectId: "demoweb-32dd6",
-  storageBucket: "demoweb-32dd6.appspot.com",
-  messagingSenderId: "284825331676",
-  appId: "1:284825331676:web:0eb9ed79330abd43589119"
+	apiKey: "AIzaSyAYos4oiAf1nhgmSC2l4DhNQzzgXXrnPTA",
+	authDomain: "demoweb-32dd6.firebaseapp.com",
+	projectId: "demoweb-32dd6",
+	storageBucket: "demoweb-32dd6.appspot.com",
+	messagingSenderId: "284825331676",
+	appId: "1:284825331676:web:0eb9ed79330abd43589119"
 };
 
-firebase.initializeApp(firebaseConfig);// Inicializaar app Firebase
-// Alberto guapooo
+firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();// db representa mi BBDD //inicia Firestore
 
-//Función auxiliar para pintar una foto en el album
-const printPhoto = (docName, docEmail, docComment, docUrl, docId) => {
-  let card = document.createElement('article');
-  card.setAttribute('class', 'card');
-  let picture = document.createElement('img');
-  picture.setAttribute('src', url);
-  picture.setAttribute('style', 'max-width:250px');
-
-  let dName = document.createElement('p');
-  dName.innerHTML = docName;
-
-  let dComment = document.createElement('p');
-  comm.innerHTML = docComment;
-
-  let id = document.createElement('p');
-  id.innerHTML = docId;
-
-  const dgetBId_usuarios = document.getElementById('usuarios');
-  card.appendChild(picture);
-  card.appendChild(dName);
-  card.appendChild(id);
-  dgetBId_usuarios.appendChild(card);
-};
-
-//Create
+function dgById(obj){
+	if(document.getElementById(obj) != null){
+		return document.getElementById(obj);
+	}
+}
+// Create
 const createUsuario = (datosUsuario) => {
 
-  db.collection("usuarios")
-    .add(datosUsuario)
-    .then((docRef) => {
-      console.log("Document written with ID: ", docRef.id)
-      readAll();
-    })
-    .catch((error) => console.error("Error adding document: ", error));
+	db.collection("usuarios")
+		.add(datosUsuario)
+		.then((docRef) => {
+			console.log("Documento registrado con ID: ", docRef.id)
+			readAll();
+		})
+		.catch((error) => console.error("Error al registrar el documento: ", error));
 }
 
+// Read all
+const readAll = async () => {
+	// Limpia del DOM los usuarios
+	cleanUsuarios();
 
-//Read all
-const readAll = () => {
-  // Limpia el album para mostrar el resultado
-  cleanUsuarios();
+	try {
+		// Petición asincrona para leer todos los documentos de la colección usuarios
+		const querySnapshot = await db.collection("usuarios").get();
 
-  //Petición a Firestore para leer todos los documentos de la colección album
-  db.collection("usuarios")
-    .get()
-    .then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        printPhoto(
-          doc.id,
-          doc.data().nombre, 
-          doc.data().email,
-          doc.data().imagen,
-          doc.data().comentario
-          )
-      });
-    })
-    .catch(() => console.log('Error reading documents'));;
+		// Recorremos la colección y pintamos cada documento
+		querySnapshot.forEach((doc) => {
+			const data = doc.data();
+			console.log("doc:", doc);
+			console.log("data.comentario:", data.comentario);
+			let dId = doc.id;
+			let dNombre = data.nombre;
+			let dEmail = data.email;
+			let dImagen = data.imagen;
+			let dComentario = data.comentario;
+
+			// llamamos a la función pasando un objeto como argumento
+			printUsuario({
+				dId,
+				dNombre, 
+				dEmail,
+				dComentario,
+				dImagen
+			});
+		});
+	} catch (error) {
+		console.log('Error reading documents', error);
+	}
 };
 
-//Delete
+// Editar
+const editarUsuario = () => {
+	alert("Estamos en construcción");
+	return;
+};
+
+// Delete
 const deletePicture = () => {
-  const id = prompt('Introduce el ID a borrar');
-  db.collection('album').doc(id).delete().then(() => {
-    alert(`Documento ${id} ha sido borrado`);
-    //Clean
-    document.getElementById('usuarios').innerHTML = "";
-    //Read all again
-    readAll();
-  })
-    .catch(() => console.log('Error borrando documento'));
+	const id = prompt('Introduce el ID a borrar');
+	db.collection('usuarios').doc(id).delete().then(() => {
+		alert(`Documento ${id} ha sido borrado`);
+		//Clean
+		document.getElementById('usuarios').innerHTML = "";
+		document.querySelector('.container').innerHTML = "";
+		//Read all again
+		readAll();
+	})
+	.catch(() => console.log('Error borrando documento'));
 };
 
-//Clean 
+// Función para pintar una foto en el album
+const printUsuario = (doc) => {
+
+	let card = document.createElement('article');
+	card.setAttribute('class', 'card');
+	/*   let picture = document.createElement('img');
+	picture.setAttribute('src', doc.dImagen);
+	picture.setAttribute('style', 'max-width:250px'); */
+
+	let id = document.createElement('p');
+	id.innerHTML = doc.dId;
+
+	let dName = document.createElement('p');
+	dName.innerHTML = doc.dNombre;
+
+	let dEmail = document.createElement('p');
+	dEmail.innerHTML = doc.dEmail;
+
+	let ddComentario = document.createElement('p');
+	ddComentario.innerHTML = doc.dComentario;
+
+	let dImagen = document.createElement('p');
+	dImagen.innerHTML = doc.dImagen;
+
+	card.appendChild(id);
+	card.appendChild(dName);
+	card.appendChild(dEmail);
+	card.appendChild(ddComentario);
+	card.appendChild(dImagen);
+	//dgById('usuarios').appendChild(card);
+
+	let html = `
+        <div class="box box1" id="${doc.dId}">
+            <div><strong>Usuario:</strong> <label>${doc.dNombre}</label></div>
+            <div><strong>Email:</strong> <label>${doc.dEmail}</label></div>
+            <div><strong>Comentario:</strong> <label>${doc.dComentario}</label></div>
+            <div><strong>Imagen:</strong> <label>${doc.dImagen}</label></div>
+			<div><strong>ID:</strong> <label>${doc.dId}</label></div>
+
+            <div class="icon-container">
+                <i onclick="editarUsuario('${doc.dId}')" class="fas fa-edit edit-icon" title="Editar ficha de ${doc.dNombre}"></i>
+                <i onclick="deletePicture('${doc.dId}')"class="fas fa-trash delete-icon" title="Eliminar ficha de ${doc.dNombre}"></i>
+            </div>
+        </div>
+    `;
+	document.querySelector('.container').innerHTML += html;
+};
+
+// Clean 
 const cleanUsuarios = () => {
-  document.getElementById('usuarios').innerHTML = "";
+	dgById('usuarios').innerHTML = "";
+	document.querySelector('.container').innerHTML = "";
 };
 
 //Show on page load
@@ -94,58 +141,54 @@ const cleanUsuarios = () => {
 
 //**********EVENTS**********
 
-//Create
-document.getElementById("btn_enviar").addEventListener("click", (event) => {
+// Create
+document.querySelector("#form_main").addEventListener("submit", (event) => {
 
-  event.preventDefault(); // paraliza envío formulario
+	event.preventDefault(); // paraliza envío formulario
 
-	let dgetBId_nombre = document.getElementById("nombre");
-	let dgetBId_email = document.getElementById("email");
-	let dgetBId_comentario = document.getElementById("comentario");
-	let dgetBId_imagen = document.getElementById("imagen");
-
-	let nombre = dgetBId_nombre.value;
-	let email = dgetBId_email.value;
-	let comentario = dgetBId_comentario.value;
-	let imagen = dgetBId_imagen.value;
+	const nombre = event.target.nombre.value;
+	const email = event.target.email.value;
+	const comentario = event.target.comentario.value;
+	const imagen = event.target.imagen.value;
 
 	// Debemos validar el formulario!
 	const emailPattern = /^[a-zA-Z0-9]{2,}@[a-zA-Z]{3,}\.(?:[a-zA-Z]{2,4})$/;
 
 	// Si el correo electrónico cumple con el patrón
-	/* if (emailPattern.test(email)) {
-	console.log("Correo electrónico válido.");
-	alert("Correo electrónico válido.")
-	return;
-	} */
-
-	createUsuario({
-		nombre,
-		email,
-		comentario,
-		imagen
-	});
+	if (emailPattern.test(email)) {
+		console.log("Correo electrónico válido.");
+		
+		createUsuario({
+			nombre,
+			email,
+			comentario,
+			imagen
+		});
+	} else {
+		console.log("Correo electrónico no válido.");
+		return false;
+	}
 });
 
-//Read all
+// Read all
 document.getElementById("read-all").addEventListener("click", () => {
-  readAll();
+	readAll();
 });
 
-//Read one
+// Read one
 document.getElementById('read-one').addEventListener("click", () => {
-  const id = prompt("Introduce el id a buscar");
-  readOne(id);
+	const id = prompt("Introduce el id a buscar");
+	readOne(id);
 });
 
 //Delete one
 document.getElementById('delete').addEventListener('click', () => {
-  deletePicture();
+	deletePicture();
 });
 
 //Clean
 document.getElementById('clean').addEventListener('click', () => {
-  cleanUsuarios();
+	cleanUsuarios();
 });
 
 //********FIRESTORE USERS COLLECTION******
@@ -179,7 +222,7 @@ function readOne(id) {
   docRef.get().then((doc) => {
     if (doc.exists) {
       console.log("Document data:", doc.data());
-      printPhoto(doc.data().title, doc.data().url, doc.id);
+      printUsuario(doc.data().title, doc.data().url, doc.id);
     } else {
       // doc.data() will be undefined in this case
       console.log("No such document!");
