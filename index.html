@@ -20,10 +20,8 @@
         <h2>Mis Usuarios</h2>
 
         <section id="button-set">
-            <button id="create">Create</button>
             <button id="read-all">Read All</button>
             <button id="read-one">Find One by Id</button>
-            <button id="delete">Delete</button>
             <button id="clean">Clean</button>
         </section>
         <h3>Usuarios</h3>
@@ -31,7 +29,7 @@
 
         <div class="container"></div>
 
-   
+        
 
         <div id="boxMain">
             <div class="form-container">
@@ -53,6 +51,20 @@
                         <button id="btn_enviar">Enviar</button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <div id="overlay" class="overlay"></div>
+        <div id="modal" class="modal">
+            <div class="form-container-delete">
+                <h2>Borrar Usuario</h2>
+                <label for="nombre">ID:</label>
+                <input type="text" id="deleteID" name="deleteID" placeholder="Introduce el identificador">
+
+                <div class="submit">
+                    <button id="btn_eliminar">Eliminar</button>
+                    <button id="btn_cancelar_delete">Cancelar</button>
+                </div>
             </div>
         </div>
 

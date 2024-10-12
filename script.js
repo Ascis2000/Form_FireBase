@@ -69,7 +69,11 @@ const editarUsuario = () => {
 };
 
 // Delete
-const deletePicture = () => {
+const deletePicture = (identificador) => {
+
+	// dgById("overlay").style.display = 'block';
+    // dgById("modal").style.display = 'block';
+
 	const id = prompt('Introduce el ID a borrar');
 	db.collection('usuarios').doc(id).delete().then(() => {
 		alert(`Documento ${id} ha sido borrado`);
@@ -115,11 +119,11 @@ const printUsuario = (doc) => {
 
 	let html = `
         <div class="box box1" id="${doc.dId}">
-            <div><strong>Usuario:</strong> <label>${doc.dNombre}</label></div>
-            <div><strong>Email:</strong> <label>${doc.dEmail}</label></div>
-            <div><strong>Comentario:</strong> <label>${doc.dComentario}</label></div>
-            <div><strong>Imagen:</strong> <label>${doc.dImagen}</label></div>
-			<div><strong>ID:</strong> <label>${doc.dId}</label></div>
+            <div class="datos"><strong>Usuario:</strong> <label>${doc.dNombre}</label></div>
+            <div class="datos"><strong>Email:</strong> <label>${doc.dEmail}</label></div>
+            <div class="datos"><strong>Comentario:</strong> <label>${doc.dComentario}</label></div>
+            <div class="datos"><strong>Imagen:</strong> <label>${doc.dImagen}</label></div>
+			<div class="datos"><strong>ID:</strong> <label>${doc.dId}</label></div>
 
             <div class="icon-container">
                 <i onclick="editarUsuario('${doc.dId}')" class="fas fa-edit edit-icon" title="Editar ficha de ${doc.dNombre}"></i>
@@ -181,14 +185,15 @@ document.getElementById('read-one').addEventListener("click", () => {
 	readOne(id);
 });
 
-//Delete one
-document.getElementById('delete').addEventListener('click', () => {
-	deletePicture();
-});
-
-//Clean
+// Clean
 document.getElementById('clean').addEventListener('click', () => {
 	cleanUsuarios();
+});
+
+// Cancelar Delete
+document.getElementById('btn_cancelar_delete').addEventListener('click', () => {
+	document.getElementById('modal').style.display = "none";
+	document.getElementById('overlay').style.display = "none";
 });
 
 //********FIRESTORE USERS COLLECTION******
@@ -213,24 +218,38 @@ const createUser = (user) => {
 
 // Read ONE
 function readOne(id) {
-  // Limpia el album para mostrar el resultado
-  cleanUsuarios();
+	// Limpia el album para mostrar el resultado
+	cleanUsuarios();
 
-  //Petición a Firestore para leer un documento de la colección album 
-  var docRef = db.collection("usuarios").doc(id);
+	//Petición a Firestore para leer un documento de la colección usuarios 
+	var docRef = db.collection("usuarios").doc(id);
 
-  docRef.get().then((doc) => {
-    if (doc.exists) {
-      console.log("Document data:", doc.data());
-      printUsuario(doc.data().title, doc.data().url, doc.id);
-    } else {
-      // doc.data() will be undefined in this case
-      console.log("No such document!");
-    }
-  }).catch((error) => {
-    console.log("Error getting document:", error);
-  });
+	docRef.get()
+	.then((doc) => {
+		if (doc.exists) {
+			console.log("Document data:", doc.data());
 
+			const data = doc.data();
+			let dId = doc.id;
+			let dNombre = data.nombre;
+			let dEmail = data.email;
+			let dImagen = data.imagen;
+			let dComentario = data.comentario;
+
+			printUsuario({
+				dId,
+				dNombre, 
+				dEmail,
+				dComentario,
+				dImagen
+			});
+		} else {
+			// doc.data() will be undefined in this case
+			console.log("No such document!");
+		}
+	}).catch((error) => {
+		console.log("Error getting document:", error);
+	});
 }
 
 /**************Firebase Auth*****************/
